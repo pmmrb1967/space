@@ -1,0 +1,261 @@
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green:  #39ff14;
+  --cyan:   #00f0ff;
+  --red:    #ff3131;
+  --yellow: #ffe619;
+  --purple: #b44fff;
+  --bg:     #05050f;
+  --hud-bg: #0a0a1a;
+  --panel:  rgba(5, 5, 20, 0.92);
+  --font:   'Courier New', Courier, monospace;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--green);
+  font-family: var(--font);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Subtle CSS starfield behind everything */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10%  15%, #fff  0%, transparent 100%),
+    radial-gradient(1px 1px at 25%  60%, #aef  0%, transparent 100%),
+    radial-gradient(1px 1px at 40%  30%, #fff  0%, transparent 100%),
+    radial-gradient(1px 1px at 55%  80%, #cef  0%, transparent 100%),
+    radial-gradient(1px 1px at 70%  10%, #fff  0%, transparent 100%),
+    radial-gradient(1px 1px at 80%  50%, #aff  0%, transparent 100%),
+    radial-gradient(1px 1px at 90%  25%, #fff  0%, transparent 100%),
+    radial-gradient(1px 1px at  5%  90%, #fff  0%, transparent 100%),
+    radial-gradient(1px 1px at 35%  45%, #faf  0%, transparent 100%),
+    radial-gradient(1px 1px at 65%  70%, #fff  0%, transparent 100%),
+    radial-gradient(1px 1px at 95%  85%, #aef  0%, transparent 100%),
+    radial-gradient(1px 1px at 15%  35%, #fff  0%, transparent 100%),
+    radial-gradient(1px 1px at 48%   5%, #cfc  0%, transparent 100%),
+    radial-gradient(1px 1px at 78%  95%, #fff  0%, transparent 100%),
+    radial-gradient(1px 1px at 22%  75%, #fff  0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── App layout ── */
+#app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  z-index: 1;
+}
+
+/* ── HUD bar ── */
+#hud {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px 6px;
+  background: var(--hud-bg);
+  border-bottom: 2px solid var(--green);
+  box-shadow: 0 0 20px rgba(57,255,20,0.25);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.hud-item        { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; flex: 1; }
+.hud-center      { align-items: center; }
+.hud-right       { align-items: flex-end; }
+
+.hud-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: rgba(57,255,20,0.50);
+}
+
+#score, #level {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: var(--green);
+  text-shadow: 0 0 10px var(--green);
+}
+
+#lives {
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: var(--cyan);
+  text-shadow: 0 0 10px var(--cyan);
+}
+
+/* ── Canvas ── */
+#gameCanvas {
+  display: block;
+  max-width: 800px;
+  width: 100%;
+  flex: 1;
+  image-rendering: pixelated;
+  cursor: none;
+}
+
+/* ── Overlays ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 5, 15, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 20;
+}
+.overlay.hidden { display: none; }
+
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 40px 48px;
+  border: 2px solid var(--green);
+  border-radius: 4px;
+  background: var(--panel);
+  box-shadow:
+    0 0 40px rgba(57,255,20,0.18),
+    inset 0 0 40px rgba(57,255,20,0.04);
+  text-align: center;
+}
+
+/* ── Title ── */
+.game-title {
+  font-size: clamp(30px, 7vw, 56px);
+  letter-spacing: 8px;
+  line-height: 1.2;
+  color: var(--green);
+  text-shadow: 0 0 12px var(--green), 0 0 40px var(--green), 0 0 80px rgba(57,255,20,0.4);
+  animation: titlePulse 2.5s ease-in-out infinite;
+}
+@keyframes titlePulse {
+  0%,100% { text-shadow: 0 0 10px var(--green), 0 0 40px var(--green); }
+  50%      { text-shadow: 0 0 20px var(--green), 0 0 80px var(--green), 0 0 130px rgba(57,255,20,0.45); }
+}
+
+/* ── Score legend on start screen ── */
+.alien-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 28px;
+  border: 1px solid rgba(57,255,20,0.28);
+  border-radius: 4px;
+}
+.preview-row { display: flex; gap: 10px; margin-bottom: 2px; }
+.alien { font-size: 22px; }
+.a1 { filter: hue-rotate(280deg) brightness(1.4); }   /* purple */
+.a2 { filter: hue-rotate(180deg) brightness(1.4); }   /* cyan   */
+.a3 { filter: hue-rotate(0deg)   brightness(1.2); }   /* green  */
+.score-legend {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(57,255,20,0.65);
+  margin-bottom: 6px;
+}
+
+/* ── Controls hint ── */
+.controls-info p {
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: rgba(57,255,20,0.7);
+}
+
+/* ── Primary button ── */
+.btn-primary {
+  padding: 12px 36px;
+  font-family: var(--font);
+  font-size: 16px;
+  letter-spacing: 4px;
+  color: var(--bg);
+  background: var(--green);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(57,255,20,0.5);
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+.btn-primary:hover  { transform: scale(1.05); box-shadow: 0 0 34px rgba(57,255,20,0.85); }
+.btn-primary:active { transform: scale(0.97); }
+
+/* ── Blink text ── */
+.blink-text {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(57,255,20,0.50);
+  animation: blink 1.2s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── Game Over screen ── */
+.game-over-title {
+  font-size: clamp(28px, 6vw, 48px);
+  letter-spacing: 6px;
+  color: var(--red);
+  text-shadow: 0 0 18px var(--red), 0 0 60px rgba(255,49,49,0.4);
+  animation: titlePulse 1.5s ease-in-out infinite;
+}
+.final-score-label {
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: rgba(57,255,20,0.55);
+}
+.final-score {
+  font-size: 46px;
+  letter-spacing: 4px;
+  color: var(--yellow);
+  text-shadow: 0 0 20px var(--yellow);
+}
+.high-score-msg {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--yellow);
+  text-shadow: 0 0 10px var(--yellow);
+}
+.high-score-msg.hidden { display: none; }
+
+/* ── Victory screen ── */
+.victory-title {
+  font-size: clamp(28px, 6vw, 48px);
+  letter-spacing: 6px;
+  color: var(--cyan);
+  text-shadow: 0 0 18px var(--cyan), 0 0 60px rgba(0,240,255,0.4);
+}
+.wave-msg {
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: rgba(57,255,20,0.8);
+}
+.countdown-wrap {
+  width: 80px; height: 80px;
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(0,240,255,0.35);
+}
+.countdown {
+  font-size: 44px;
+  color: var(--cyan);
+  text-shadow: 0 0 20px var(--cyan);
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .overlay-content { padding: 26px 18px; gap: 14px; }
+  .game-title { letter-spacing: 4px; }
+}

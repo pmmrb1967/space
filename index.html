@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space Invaders</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="hud">
+      <div class="hud-item">
+        <span class="hud-label">SCORE</span>
+        <span id="score">00000</span>
+      </div>
+      <div class="hud-item hud-center">
+        <span class="hud-label">LEVEL</span>
+        <span id="level">1</span>
+      </div>
+      <div class="hud-item hud-right">
+        <span class="hud-label">LIVES</span>
+        <span id="lives">&#9679;&#9679;&#9679;</span>
+      </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Start Screen -->
+    <div id="startScreen" class="overlay">
+      <div class="overlay-content">
+        <h1 class="game-title">SPACE<br>INVADERS</h1>
+        <div class="alien-preview">
+          <div class="preview-row">
+            <span class="alien a1">👾</span>
+            <span class="alien a1">👾</span>
+            <span class="alien a1">👾</span>
+          </div>
+          <div class="score-legend">= 30 PTS</div>
+          <div class="preview-row">
+            <span class="alien a2">👾</span>
+            <span class="alien a2">👾</span>
+            <span class="alien a2">👾</span>
+          </div>
+          <div class="score-legend">= 20 PTS</div>
+          <div class="preview-row">
+            <span class="alien a3">👾</span>
+            <span class="alien a3">👾</span>
+            <span class="alien a3">👾</span>
+          </div>
+          <div class="score-legend">= 10 PTS</div>
+        </div>
+        <div class="controls-info">
+          <p>← → &nbsp; MOVE &nbsp;&nbsp;&nbsp; SPACE &nbsp; FIRE</p>
+        </div>
+        <button id="startBtn" class="btn-primary">INSERT COIN</button>
+        <p class="blink-text">PRESS ENTER TO START</p>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="overlay hidden">
+      <div class="overlay-content">
+        <h2 class="game-over-title">GAME OVER</h2>
+        <p class="final-score-label">FINAL SCORE</p>
+        <p id="finalScore" class="final-score">00000</p>
+        <p id="highScoreMsg" class="high-score-msg hidden">🏆 NEW HIGH SCORE!</p>
+        <button id="restartBtn" class="btn-primary">PLAY AGAIN</button>
+        <p class="blink-text">PRESS ENTER TO RESTART</p>
+      </div>
+    </div>
+
+    <!-- Victory / Wave Clear Screen -->
+    <div id="victoryScreen" class="overlay hidden">
+      <div class="overlay-content">
+        <h2 class="victory-title">WAVE CLEAR!</h2>
+        <p class="wave-msg">Get ready for wave <span id="nextLevel">2</span>!</p>
+        <div class="countdown-wrap">
+          <span id="countdown" class="countdown">3</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
